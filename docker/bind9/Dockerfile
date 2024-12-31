@@ -1,18 +1,24 @@
 FROM ubuntu:jammy
 
-RUN apt update\
-  && apt dist-upgrade -y\
-  && apt install wget -y
+RUN apt update \
+  && apt dist-upgrade -y \
+  && apt install -y wget
 
-
-#Setting for future env vars later maybe?
-ARG BCIP
-ARG NSIP
-
-#download install script
+# Create the folder for bind scripts
 RUN mkdir -p /docker/bind
-RUN wget -O /docker/bind/docker-install-bind.sh https://raw.githubusercontent.com/Pugmatt/BedrockConnect/master/scripts/docker-install-bind.sh 
-RUN bash /docker/bind/docker-install-bind.sh ${BCIP} ${NSIP}
 
-#run forever
-CMD ["/bin/bash", "-c", "/etc/init.d/named start; while :; do sleep 10; done"]
+# Download the install script
+RUN wget -O /docker/bind/docker-install-bind.sh \
+  https://raw.githubusercontent.com/Pugmatt/BedrockConnect/master/scripts/docker-install-bind.sh
+
+# Make it executable
+RUN chmod +x /docker/bind/docker-install-bind.sh
+
+# Provide default values for environment variables (optional)
+ENV BCIP=""
+ENV NSIP=""
+
+# At container startup, pass BCIP/NSIP from environment to the script
+CMD ["/bin/bash", "-c", "/docker/bind/docker-install-bind.sh ${BCIP} ${NSIP} \
+  && /etc/init.d/named start \
+  && while :; do sleep 10; done"]
