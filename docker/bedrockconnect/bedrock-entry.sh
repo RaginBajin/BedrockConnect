@@ -2,12 +2,12 @@
 
 set -eo pipefail
 
-: "${TMP_DIR:=/tmp}"
+: "${TMP_DIR:=/config/tmp}"
 
 if [[ ${DEBUG^^} = TRUE ]]; then
   set -x
   curlArgs=(-v)
-  echo "DEBUG: running as $(id -a) with $(ls -ld /data)"
+  echo "DEBUG: running as $(id -a) with $(ls -ld /config)"
   echo "       current directory is $(pwd)"
 fi
 
